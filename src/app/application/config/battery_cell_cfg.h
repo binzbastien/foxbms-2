@@ -226,11 +226,69 @@
 #error "Configuration error! - Maximum safety limit for under voltage can't be lower than deep-discharge limit"
 #endif
 
+/**
+ * @ingroup CONFIG_BATTERY_CELL
+ * @brief   nominal Capacity according to data sheet
+ * @ptype   int
+ * @unit    Ah
+ */
+#define Qcell (3)
+
+/**
+ * @ingroup CONFIG_BATTERY_CELL
+ * @brief   nominal Capacity according to data sheet
+ * @ptype   int
+ * @unit    -
+ */
+#define CE (1)
+
+/**
+ * @ingroup CONFIG_BATTERY_CELL
+ * @brief   Covariance value (EKF)
+ * @ptype   double
+ * @unit    -
+ */
+#define Qbump (0.9)
+
 /** structure for lookup table */
 typedef struct {
     const int16_t voltage_mV; /*!< cell voltage in mV */
     const float value;        /*!< corresponding value, can be SOC/SOE in % or capacity/energy */
 } BC_LUT_s;
+
+/** structure for lookup table for the OCV*/
+typedef struct {
+    const int16_t OCV_mV; /*!< cell voltage in mV */
+    const int8_t SOC;     /*!< corresponding value, can be SOC/SOE in % or capacity/energy */
+} LT_OCV_s;
+
+/** structure for lookup table for the ECM parameters*/
+typedef struct {
+    const int16_t R0;   /*!< R0 in [mOhms] */
+    const int16_t R1;   /*!< R1 in [mOhms] */
+    const int16_t R2;   /*!< R2 in [mOhms] */
+    const int16_t Tau1; /*!< Tau1 in [ms] */
+    const int16_t Tau2; /*!< Tau2 in [ms] */
+    const int16_t SOC;  /*!< SOC in [%] */
+} LT_ECMparam_s;
+
+/** structure for lookup table for the Hysteresis parameters*/
+typedef struct {
+    const float a;           /*!< a in [-] */
+    const float b;           /*!< b in [-] */
+    const float c;           /*!< c in [-] */
+    const float d;           /*!< d in [-] */
+    const float e;           /*!< e in [-] */
+    const float f;           /*!< f in [-] */
+    const float g;           /*!< g in [-] */
+    const int Temperature; /*!< Temperature in [°C] */
+} LT_Hystparam_s;
+
+/** structure for lookup table for the Initial states*/
+typedef struct {
+    const int SOC; /*!< a in [-] */
+    const int SOH; /*!< Temperature in [°C] */
+} LT_Init_state;
 
 /*========== Extern Constant and Variable Declarations ======================*/
 extern uint16_t bc_stateOfChargeLookupTableLength;   /*!< length of the SOC lookup table */
@@ -238,7 +296,49 @@ extern const BC_LUT_s bc_stateOfChargeLookupTable[]; /*!< SOC lookup table */
 
 extern uint16_t bc_stateOfEnergyLookupTableLength;   /*!< length of the SOE lookup table */
 extern const BC_LUT_s bc_stateOfEnergyLookupTable[]; /*!< SOE lookup table */
+//Chemistry NMC--------------------------------------------------------------------------------------------------------
+extern const LT_OCV_s OCVT45NMCLookupTable[];  // OCV Lookup table at 45 degrees
+extern uint16_t OCVT45NMCLookupTableLength;    /*!< length of the OCV lookup table */
+extern const LT_OCV_s OCVT25NMCLookupTable[];  // OCV Lookup table at 25 degrees
+extern uint16_t OCVT25NMCLookupTableLength;    /*!< length of the OCV lookup table */
+extern const LT_OCV_s OCVT10NMCLookupTable[];  // OCV Lookup table at 10 degrees
+extern uint16_t OCVT10NMCLookupTableLength;    /*!< length of the OCV lookup table */
+extern const LT_OCV_s OCVT0NMCLookupTable[];   // OCV Lookup table at 0 degrees
+extern uint16_t OCVT0NMCLookupTableLength;     /*!< length of the OCV lookup table */
 
+
+extern const LT_ECMparam_s ECMT45NMCLookupTable[];  // ECM parameters Lookup table at 45 degrees
+extern uint16_t ECMT45NMCLookupTableLength;         /*!< length of the ECM lookup table */
+extern const LT_ECMparam_s ECMT25NMCLookupTable[];  // ECM parameters Lookup table at 25 degrees
+extern uint16_t ECMT25NMCLookupTableLength;         /*!< length of the ECM lookup table */
+extern const LT_ECMparam_s ECMT10NMCLookupTable[];  // ECM parameters Lookup table at 10 degrees
+extern uint16_t ECMT10NMCLookupTableLength;         /*!< length of the ECM lookup table */
+extern const LT_ECMparam_s ECMT0NMCLookupTable[];   // ECM parameters Lookup table at 0 degrees
+extern uint16_t ECMT0NMCLookupTableLength;          /*!< length of the ECM lookup table */
+
+extern const LT_Hystparam_s HystNMCLookupTable[];  // Taylor serie parameters for the hysteresis effect
+//---------------------------------------------------------------------------------------------------------------------
+//Chemistry LFP--------------------------------------------------------------------------------------------------------
+extern const LT_OCV_s OCVT45LFPLookupTable[];  // OCV Lookup table at 45 degrees
+extern uint16_t OCVT45LFPLookupTableLength;    /*!< length of the OCV lookup table */
+extern const LT_OCV_s OCVT25LFPLookupTable[];  // OCV Lookup table at 25 degrees
+extern uint16_t OCVT25LFPLookupTableLength;    /*!< length of the OCV lookup table */
+extern const LT_OCV_s OCVT10LFPLookupTable[];  // OCV Lookup table at 10 degrees
+extern uint16_t OCVT10LFPLookupTableLength;    /*!< length of the OCV lookup table */
+extern const LT_OCV_s OCVT0LFPLookupTable[];   // OCV Lookup table at 0 degrees
+extern uint16_t OCVT0LFPLookupTableLength;     /*!< length of the OCV lookup table */
+
+extern const LT_ECMparam_s ECMT45LFPLookupTable[];  // ECM parameters Lookup table at 45 degrees
+extern uint16_t ECMT45LFPLookupTableLength;         /*!< length of the ECM lookup table */
+extern const LT_ECMparam_s ECMT25LFPLookupTable[];  // ECM parameters Lookup table at 25 degrees
+extern uint16_t ECMT25LFPLookupTableLength;         /*!< length of the ECM lookup table */
+extern const LT_ECMparam_s ECMT10LFPLookupTable[];  // ECM parameters Lookup table at 10 degrees
+extern uint16_t ECMT10LFPLookupTableLength;         /*!< length of the ECM lookup table */
+extern const LT_ECMparam_s ECMT0LFPLookupTable[];   // ECM parameters Lookup table at 0 degrees
+extern uint16_t ECMT0LFPLookupTableLength;          /*!< length of the ECM lookup table */
+
+extern const LT_Hystparam_s HystLFPLookupTable[];  // Taylor serie parameters for the hysteresis effect
+//---------------------------------------------------------------------------------------------------------------------
 /*========== Extern Function Prototypes =====================================*/
 
 /*========== Externalized Static Functions Prototypes (Unit Test) ===========*/

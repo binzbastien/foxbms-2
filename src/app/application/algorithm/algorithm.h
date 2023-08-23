@@ -56,7 +56,8 @@
 
 #ifndef FOXBMS__ALGORITHM_H_
 #define FOXBMS__ALGORITHM_H_
-
+#define M 3
+#define N 3
 /*========== Includes =======================================================*/
 #include "algorithm_cfg.h"
 
@@ -82,6 +83,23 @@ extern void ALGO_MainFunction(void);
  */
 extern void ALGO_MonitorExecutionTime(void);
 
+/**
+ * @brief  SOC prediction algorithm for NMC and LFP chemistry, SOH estimation for the NMC only
+ * @param chemistry NMC =>0 | LFP =>1
+ * @param temperature_cell Temperature of the cell in degrees
+ * @param Current_mA Current flows through the cell
+ * @param voltage_cell1 Cell voltage measurement
+ */
+extern void ALGO_bfh_SOC_NMC_LFP(bool chemistry, int16_t temperature_cell, int16_t Current_mA, int16_t voltage_cell1);
+
+/**
+ * @brief  Select the ECM parameters in function of the chemistry, the temperature and the SOC
+ * @param chemistry NMC =>0 | LFP =>1
+ * @param temperature_cell Temperature of the cell in degrees
+ * @param voltage_cell1 Cell voltage measurement
+ */
+extern void Parameters_selection(bool chemistry, int16_t temperature_cell, float SOC);
+void jacobi(float A[M][N], float U[M][M], float S[N], float VT[N][N]);
 /*========== Externalized Static Functions Prototypes (Unit Test) ===========*/
 #ifdef UNITY_UNIT_TEST
 extern void TEST_ALGO_ResetInitializationRequest(void);

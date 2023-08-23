@@ -270,6 +270,8 @@ extern STD_RETURN_TYPE_e DATA_Read4DataBlocks(
  */
 extern void DATA_ExecuteDataBist(void);
 
+
+
 /*========== Externalized Static Functions Prototypes (Unit Test) ===========*/
 
 #endif /* FOXBMS__DATABASE_H_ */

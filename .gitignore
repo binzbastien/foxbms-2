@@ -56,3 +56,4 @@ __pycache__
 
 # CAN log files
 *.asc
+/.metadata/

@@ -125,7 +125,12 @@ extern uint32_t CANRX_SoftwareVersion(
     FAS_ASSERT(kpkCanShim != NULL_PTR);
     return 0;
 }
-
+extern uint32_t CANRX_Canrequest(
+    CAN_MESSAGE_PROPERTIES_s message,
+    const uint8_t *const kpkCanData,
+    const CAN_SHIM_s *const kpkCanShim) {
+    return 0;
+}
 /*========== Externalized Static Function Implementations (Unit Test) =======*/
 #ifdef UNITY_UNIT_TEST
 

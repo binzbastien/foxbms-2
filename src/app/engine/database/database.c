@@ -70,6 +70,8 @@
 #include "ftask.h"
 #include "os.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /*========== Macros and Definitions =========================================*/
@@ -376,5 +378,6 @@ extern void DATA_ExecuteDataBist(void) {
     FAS_ASSERT(dummyReadTable.member1 == dummyWriteTable.member1);
     FAS_ASSERT(dummyReadTable.member2 == dummyWriteTable.member2);
 }
+
 
 /*========== Externalized Static Function Implementations (Unit Test) =======*/

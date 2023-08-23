@@ -106,6 +106,23 @@ typedef enum {
     DATA_BLOCK_ID_HTSEN,
     DATA_BLOCK_ID_ADC_VOLTAGE,
     DATA_BLOCK_ID_DUMMY_FOR_SELF_TEST,
+    DATA_BLOCK_ID_DATABASE,
+    DATA_BLOCK_ID_EKF,
+    DATA_BLOCK_ID_ECM,
+    DATA_BLOCK_ID_RD_BMS_OP_TIME,
+    DATA_BLOCK_ID_RD_BMS_CONSUMPTION,
+    DATA_BLOCK_ID_RD_BMS_EOC,
+    DATA_BLOCK_ID_RD_BMS_EOD,
+    DATA_BLOCK_ID_RD_BMS_DOD,
+    DATA_BLOCK_ID_RD_BMS_DOC,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_DISCHARGE,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_CHARGE,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_REGEN,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_OPTEMP,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_CHARGE_TEMP,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_DISCHARGE_TEMP,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_REGEN_TEMP,
+    DATA_BLOCK_ID_RD_BMS_CUMTIME_SOC,
     DATA_BLOCK_ID_MAX, /**< DO NOT CHANGE, MUST BE THE LAST ENTRY */
 } DATA_BLOCK_ID_e;
 
@@ -597,6 +614,259 @@ typedef struct {
 } DATA_BLOCK_DUMMY_FOR_SELF_TEST_s;
 
 /** array for the database */
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header;          /*!< Data block header */
+    uint16_t RegenCurrent[5];            /*!< Save the data in waiting to know if its regenerative or charging phase*/
+    uint16_t TemperatureRegenCurrent[5]; /*!< Save the data in waiting to know if its regenerative or charging phase*/
+    uint16_t RegenerativeTime;           /*!< Record the time during the regenerative time*/
+    uint16_t SleepTime;                  /*!< Record the time during the sleep time*/
+    uint16_t Ahregen;                    /*!< Save the data in waiting to know if its regenerative or charging phase*/
+    uint16_t Whregen;                    /*!< Save the data in waiting to know if its regenerative or charging phase*/
+    uint16_t Start_DOC;                  /*!< Start the deep of charge*/
+    uint16_t Start_DOD;                  /*!< Start the deep of discharge*/
+    uint16_t RegenerativeTable[5][2];    /*!< Save the data in waiting to know if its regenerative or charging phase*/
+    bool ChargePhase;                    /*!< true if it is the charge phase*/
+    bool DischargePhase;                 /*!< true if it is the charge phase*/
+    bool RegenPhase;                     /*!< true if it is the charge phase*/
+} DATA_BLOCK_DATABASE_s;
+
+/** array for the database */
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    float SigmaX[3][3];         /*!< Uncertainty of initial state (xhat) */
+    float SigmaV;               /*!< Uncertainty of Voltage sensor, state equation */
+    float SigmaW;               /*!< Uncertainty of current sensor, state equation */
+    float xhat[3];              /*!< Estimated state (Ûrc1, Ûrc2, SÔC) */
+    float Ahat[3][3];           /*!< Jacobian matrix of the partial derivatives */
+    float Bhat[3];              /*!< Input matrix which represent the offset of the model */
+    float Chat[3];              /*!< Partial derivative of the voltage in function of SOC */
+    float Dhat;                 /*!< Influence of the internal resistor on the correction factor L */
+} DATA_BLOCK_EKF_s;
+
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    float OCV;                  /*!< cell voltage in mV */
+    float R0;                   /*!< R0 in [mOhms] */
+    float R1;                   /*!< R1 in [mOhms] */
+    float R2;                   /*!< R2 in [mOhms] */
+    float Tau1;                 /*!< Tau1 in [ms] */
+    float Tau2;                 /*!< Tau2 in [ms] */
+    float Uest;                 /*!< Cell voltage estimated */
+    float U_hyst;               /*!< hysteresis voltage */
+    float U_hyst_new;           /*!< new hysteresis voltage value (LFP) */
+    float U_hyst_old;           /*!< old hysteresis voltage value (LFP) */
+    int time_hyst;              /*!< Time since current is constant (LFP) */
+    float SOC_ref;              /*!< SOC reference used for the SOH estimation */
+    bool SOC_ref_valid;         /*!< Validation of the actual value is a reference */
+    float OCV_old;              /*!< Previous value of the OCV*/
+    float SOC_int;              /*!< SOC value from the current integration*/
+    float SOC_int_old;          /*!< Previous SOC value from the current integration*/
+    float SOC_EKF;              /*!< SOC value estimated by the EKF*/
+    float SOC_EKF_old;          /*!< Previous SOC value from the EKF*/
+    float last_SOC_ECM_check;   /*!< The value of the SOC when the ECM parameters were update*/
+    float SOH;                  /*!< SOH state of the battery*/
+    float SOH_old;              /*!< Previous SOH value*/
+    bool chemistry;             /*!< NMC =>0 | LFP =>1*/
+    bool SOC_validate_LFP;      /*!< The SOC of the LFP hs been validated*/
+    int temperature_set;        /*!< temperature set for the ECM [0, 10, 25, 45]*/
+    int16_t Current_mA_old;     /*!< Previous Current measurement*/
+} DATA_BLOCK_ECM_s;
+
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t T_HR0;             Total seconds in Mode 0 (deep sleep)
+    //uint16_t T_HR1;             Total seconds in Mode 1 (sleep)
+    //uint16_t T_HR2;             Total seconds in Mode 2 (idle)
+    //uint16_t T_HR3;             Total seconds in Mode 3 (charge)
+    //uint16_t T_HR4;             Total seconds in Mode 4 (discharge)
+    //uint16_t T_HR5;             Total seconds in Mode 5 (regen)
+    uint16_t HR[6];
+} DATA_BLOCK_RD_BMS_OP_TIME_s;
+
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t T_WHC;             Total Watthour Charged
+    //uint16_t T_WHD;             Total Watthour discharged
+    //uint16_t T_WHR;             Total Watthour charged in regen
+    //uint16_t T_AHC;             Total Amphour charged
+    //uint16_t T_AHD;             Total Amphour discharged
+    //uint16_t T_AHR;             Total Amphour charged in regen
+    uint16_t CONSUMPTION[6];
+} DATA_BLOCK_RD_BMS_CONSUMPTION_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t EOC100;            Number of times End of charge between 95-100%
+    //uint16_t EOC94;             Number of times End of charge between 90-94%
+    //uint16_t EOC89;             Number of times End of charge between 85-89%
+    //uint16_t EOC84;             Number of times End of charge between 80-84%
+    //uint16_t EOC79;             Number of times End of charge between 60-79%
+    //uint16_t EOC59;             Number of times End of charge between 40-59%
+    //uint16_t EOC39;             Number of times End of charge between 20-39%
+    //uint16_t EOC19;             Number of times End of charge between 0-19%
+    uint16_t EOC[8];
+} DATA_BLOCK_RD_BMS_EOC_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t EOD100;            Number of times End of discharge between 87.5-100%
+    //uint16_t EOD87;             Number of times End of discharge between 75-87.5%
+    //uint16_t EOD75;             Number of times End of discharge between 62.5-75%
+    //uint16_t EOD62;             Number of times End of discharge between 50-62.5%
+    //uint16_t EOD50;             Number of times End of discharge between 37.5-50%
+    //uint16_t EOD37;             Number of times End of discharge between 25-37.5%
+    //uint16_t EOD25;             Number of times End of discharge between 12.5-25%
+    //uint16_t EOD12;             Number of times End of discharge between 0-12.5%
+    uint16_t EOD[8];
+} DATA_BLOCK_RD_BMS_EOD_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t DOD100;            Depth of Discharge 87.5- 100%
+    //uint16_t DOD87;             Depth of Discharge 75- 87.5%
+    //uint16_t DOD75;             Depth of Discharge 62.5- 75%
+    //uint16_t DOD62;             Depth of Discharge 50- 62.5%
+    //uint16_t DOD50;             Depth of Discharge 37.5- 50%
+    //uint16_t DOD37;             Depth of Discharge 25- 37.5%
+    //uint16_t DOD25;             Depth of Discharge 12.5- 25%
+    //uint16_t DOD12;             Depth of Discharge 0- 12.5%
+    uint16_t DOD[8];
+} DATA_BLOCK_RD_BMS_DOD_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t DOC100;            Depth of Charge 87.5- 100%
+    //uint16_t DOC87;             Depth of Charge 75- 87.5%
+    //uint16_t DOC75;             Depth of Charge 62.5- 75%
+    //uint16_t DOC62;             Depth of Charge 50- 62.5%
+    //uint16_t DOC50;             Depth of Charge 37.5- 50%
+    //uint16_t DOC37;             Depth of Charge 25- 37.5%
+    //uint16_t DOC25;             Depth of Charge 12.5- 25%
+    //uint16_t DOC12;             Depth of Charge 0- 12.5%
+    uint16_t DOC[8];
+} DATA_BLOCK_RD_BMS_DOC_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t DCC1;              Time spent at Discharge Current Level 1 (0-20%)
+    //uint16_t DCC2;              Time spent at Discharge Current Level 2 (20-40%)
+    //uint16_t DCC3;              Time spent at Discharge Current Level 3 (40-60%)
+    //uint16_t DCC4;              Time spent at Discharge Current Level 4 (60-80%)
+    //uint16_t DCC5;              Time spent at Discharge Current Level 5 (80-100%)
+    uint16_t DCC[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_DISCHARGE_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t CCC1;              Time spent at Charge Current Level 1 (0-20%)
+    //uint16_t CCC2;              Time spent at Charge Current Level 2 (20-40%)
+    //uint16_t CCC3;              Time spent at Charge Current Level 3 (40-60%)
+    //uint16_t CCC4;              Time spent at Charge Current Level 4 (60-80%)
+    //uint16_t CCC5;              Time spent at Charge Current Level 5 (80-100%)
+    uint16_t CCC[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_CHARGE_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t REG1;              Time spent at Regen Current Level 1 (0-20%)
+    //uint16_t REG2;              Time spent at Regen Current Level 2 (20-40%)
+    //uint16_t REG3;              Time spent at Regen Current Level 3 (40-60%)
+    //uint16_t REG4;              Time spent at Regen Current Level 4 (60-80%)
+    //uint16_t REG5;              Time spent at Regen Current Level 5 (80-100%)
+    uint16_t REG[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_REGEN_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t OPT1;              Time spent at Operation Temp Level 1 (0-20%)
+    //uint16_t OPT2;              Time spent at Operation Temp Level 2 (20-40%)
+    //uint16_t OPT3;              Time spent at Operation Temp Level 3 (40-60%)
+    //uint16_t OPT4;              Time spent at Operation Temp Level 4 (60-80%)
+    //uint16_t OPT5;              Time spent at Operation Temp Level 5 (80-100%)
+    uint16_t OPT[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_OPTEMP_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t CPT1;              Time spent at Charge Temp Level 1 (0-20%)
+    //uint16_t CPT2;              Time spent at Charge Temp Level 2 (20-40%)
+    //uint16_t CPT3;              Time spent at Charge Temp Level 3 (40-60%)
+    //uint16_t CPT4;              Time spent at Charge Temp Level 4 (60-80%)
+    //uint16_t CPT5;              Time spent at Charge Temp Level 5 (80-100%)
+    uint16_t CPT[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_CHARGE_TEMP_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_ID_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t DPT1;              Time spent at Discharge Temp Level 1 (0-20%)
+    //uint16_t DPT2;              Time spent at Discharge Temp Level 2 (20-40%)
+    //uint16_t DPT3;              Time spent at Discharge Temp Level 3 (40-60%)
+    //uint16_t DPT4;              Time spent at Discharge Temp Level 4 (60-80%)
+    //uint16_t DPT5;              Time spent at Discharge Temp Level 5 (80-100%)
+    uint16_t DPT[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_DISCHARGE_TEMP_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t REGT1;             Time spent at Regen Temp Level 1 (0-20%)
+    //uint16_t REGT2;             Time spent at Regen Temp Level 2 (20-40%)
+    //uint16_t REGT3;             Time spent at Regen Temp Level 3 (40-60%)
+    //uint16_t REGT4;             Time spent at Regen Temp Level 4 (60-80%)
+    //uint16_t REGT5;             Time spent at Regen Temp Level 5 (80-100%)
+    uint16_t REGT[5];
+} DATA_BLOCK_RD_BMS_CUMTIME_REGEN_TEMP_s;
+typedef struct {
+    /* This struct needs to be at the beginning of every database entry. During
+     * the initialization of a database struct, uniqueId must be set to the
+     * respective database entry representation in enum DATA_BLOCK_e. */
+    DATA_BLOCK_HEADER_s header; /*!< Data block header */
+    //uint16_t SOC12;             Time spent at SoC Level 1 (0-12.5%)
+    //uint16_t SOC25;             Time spent at SoC Level 2 (12.5-25%)
+    //uint16_t SOC37;             Time spent at SoC Level 3 (25-37.5%)
+    //uint16_t SOC50;             Time spent at SoC Level 4 (37.5-50%)
+    //uint16_t SOC62;             Time spent at SoC Level 5 (50-62.5%)
+    //uint16_t SOC75;             Time spent at SoC Level 6 (62.5-75%)
+    //uint16_t SOC87;             Time spent at SoC Level 7 (75-87.5%)
+    //uint16_t SOC100;            Time spent at SoC Level 8 (87.5-100%)
+    uint16_t SOC[8];
+} DATA_BLOCK_RD_BMS_CUMTIME_SOC_s;
 extern DATA_BASE_s data_database[DATA_BLOCK_ID_MAX];
 
 /*========== Extern Constant and Variable Declarations ======================*/

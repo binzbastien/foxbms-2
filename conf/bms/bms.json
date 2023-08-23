@@ -5,9 +5,9 @@
             "ic": "6813-1"
         },
         "temperature-sensor": {
-            "manufacturer": "epcos",
-            "model": "b57251v5103j060",
-            "method": "polynomial"
+            "manufacturer": "vishay",
+            "model": "ntcle317e4103sba",
+            "method": "lookup-table"
         }
     },
     "application": {

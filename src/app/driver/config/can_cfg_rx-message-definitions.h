@@ -83,6 +83,9 @@
 /** Periodicity of CAN ID to get the software version in ms */
 #define CANRX_SOFTWARE_VERSION_PERIOD_ms (CANRX_NOT_PERIODIC)
 
+/** CAN message ID to send the data frame via CAN */
+#define CANRX_DATABASE_SEND_CAN_ID (0xAA)
+
 /**
  * -------------------------CAUTION-------------------------
  * The 3 following defines are used by the insulation monitoring device (IMD).
@@ -120,11 +123,13 @@
 #define CANRX_CURRENT_SENSOR_MESSAGES_DLC (6u)
 
 /* composed Rx  messages */
-
+#define CANRX_STRING0_DATABASE_ID        (0x666u)
+#define CANRX_STRING0_DATABASE_PERIOD_ms (CANRX_NOT_PERIODIC)
 /* AXIVION Disable Style Generic-NoUnsafeMacro: These macros MUST only be used
    to populate the 'can_rxMessages' array. The type of this array expects data
    exactly as it is provided here and therefore these macros are good (for this
    and only for this purpose!).*/
+
 #define CANRX_DEBUG_MESSAGE              \
     {                                    \
         .id         = CANRX_DEBUG_ID,    \
@@ -263,6 +268,16 @@
     },                                                   \
     {                                                    \
         .period = CANRX_STRING0_ENERGY_COUNTER_PERIOD_ms \
+    }
+
+#define CANRX_DATABASE_TRANSFER_REQUEST_MESSAGE   \
+    {                                             \
+        .id         = CANRX_DATABASE_SEND_CAN_ID, \
+        .dlc        = CAN_DEFAULT_DLC,            \
+        .endianness = CAN_LITTLE_ENDIAN,          \
+    },                                            \
+    {                                             \
+        .period = CANRX_DEBUG_PERIOD_ms           \
     }
 /* AXIVION Enable Style Generic-NoUnsafeMacro */
 

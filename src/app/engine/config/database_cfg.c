@@ -168,6 +168,65 @@ static DATA_BLOCK_HTSEN_s data_blockHumidityTemperatureSensor = {.header.uniqueI
 /** data block: used for self-test */
 static DATA_BLOCK_DUMMY_FOR_SELF_TEST_s data_blockDummyForSelfTest = {
     .header.uniqueId = DATA_BLOCK_ID_DUMMY_FOR_SELF_TEST};
+/** data block: used for database */
+static DATA_BLOCK_DATABASE_s data_blockDatabase = {.header.uniqueId = DATA_BLOCK_ID_DATABASE};
+
+/** data block: used for Sigma value for the EKF */
+static DATA_BLOCK_EKF_s data_blockEKF = {.header.uniqueId = DATA_BLOCK_ID_EKF};
+
+/** data block: used for ECM */
+static DATA_BLOCK_ECM_s data_blockECM = {.header.uniqueId = DATA_BLOCK_ID_ECM};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_OP_TIME_s data_blockrdBmsOpTime = {.header.uniqueId = DATA_BLOCK_ID_RD_BMS_OP_TIME};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CONSUMPTION_s data_blockrdBmsConsumption = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CONSUMPTION};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_EOC_s data_blockrdBmsEoc = {.header.uniqueId = DATA_BLOCK_ID_RD_BMS_EOC};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_EOD_s data_blockrdBmsEod = {.header.uniqueId = DATA_BLOCK_ID_RD_BMS_EOD};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_DOD_s data_blockrdBmsDod = {.header.uniqueId = DATA_BLOCK_ID_RD_BMS_DOD};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_DOC_s data_blockrdBmsDoc = {.header.uniqueId = DATA_BLOCK_ID_RD_BMS_DOC};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_DISCHARGE_s data_blockrdBmsCumtimeDischarge = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_DISCHARGE};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_CHARGE_s data_blockrdBmsCumtimeCharge = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_CHARGE};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_REGEN_s data_blockrdBmsCumtimeRegen = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_REGEN};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_OPTEMP_s data_blockrdBmsCumtimeOptemp = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_OPTEMP};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_CHARGE_TEMP_s data_blockrdBmsCumtimeCharge_temp = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_CHARGE_TEMP};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_DISCHARGE_TEMP_s data_blockrdBmsCumtimeDischarge_temp = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_DISCHARGE_TEMP};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_REGEN_TEMP_s data_blockrdBmsCumtimeRegen_temp = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_REGEN_TEMP};
+
+/** data block: used for Data frame of the BFH*/
+static DATA_BLOCK_RD_BMS_CUMTIME_SOC_s data_blockrdBmsCumtimeSoc = {
+    .header.uniqueId = DATA_BLOCK_ID_RD_BMS_CUMTIME_SOC};
 
 /**
  * @brief   channel configuration of database (data blocks)
@@ -208,6 +267,23 @@ DATA_BASE_s data_database[] = {
     {(void *)(&data_blockAdcVoltage), sizeof(DATA_BLOCK_ADC_VOLTAGE_s)},
     {(void *)(&data_blockHumidityTemperatureSensor), sizeof(DATA_BLOCK_HTSEN_s)},
     {(void *)(&data_blockDummyForSelfTest), sizeof(DATA_BLOCK_DUMMY_FOR_SELF_TEST_s)},
+    {(void *)(&data_blockDatabase), sizeof(DATA_BLOCK_DATABASE_s)},
+    {(void *)(&data_blockEKF), sizeof(DATA_BLOCK_EKF_s)},
+    {(void *)(&data_blockECM), sizeof(DATA_BLOCK_ECM_s)},
+    {(void *)(&data_blockrdBmsOpTime), sizeof(DATA_BLOCK_RD_BMS_OP_TIME_s)},
+    {(void *)(&data_blockrdBmsConsumption), sizeof(DATA_BLOCK_RD_BMS_CONSUMPTION_s)},
+    {(void *)(&data_blockrdBmsEoc), sizeof(DATA_BLOCK_RD_BMS_EOC_s)},
+    {(void *)(&data_blockrdBmsEod), sizeof(DATA_BLOCK_RD_BMS_EOD_s)},
+    {(void *)(&data_blockrdBmsDod), sizeof(DATA_BLOCK_RD_BMS_DOD_s)},
+    {(void *)(&data_blockrdBmsDoc), sizeof(DATA_BLOCK_RD_BMS_DOC_s)},
+    {(void *)(&data_blockrdBmsCumtimeDischarge), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_DISCHARGE_s)},
+    {(void *)(&data_blockrdBmsCumtimeCharge), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_CHARGE_s)},
+    {(void *)(&data_blockrdBmsCumtimeRegen), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_REGEN_s)},
+    {(void *)(&data_blockrdBmsCumtimeOptemp), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_OPTEMP_s)},
+    {(void *)(&data_blockrdBmsCumtimeCharge_temp), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_CHARGE_TEMP_s)},
+    {(void *)(&data_blockrdBmsCumtimeDischarge_temp), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_DISCHARGE_TEMP_s)},
+    {(void *)(&data_blockrdBmsCumtimeRegen_temp), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_REGEN_TEMP_s)},
+    {(void *)(&data_blockrdBmsCumtimeSoc), sizeof(DATA_BLOCK_RD_BMS_CUMTIME_SOC_s)},
 };
 
 /*========== Static Function Prototypes =====================================*/

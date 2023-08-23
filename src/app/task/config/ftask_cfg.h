@@ -294,6 +294,29 @@ extern void FTSK_RunUserCodeAfe(void);
  */
 extern void FTSK_RunUserCodeIdle(void);
 
+/**
+ * @brief   Idle task
+ * @details Called by #FTSK_RunUserCodeCyclicAlgorithm100ms() each minute
+ *          This function read the actual database from the CSV file
+ * @ingroup API_OS
+ */
+extern void DATA_read_BIN_file(int select_file);
 /*========== Externalized Static Functions Prototypes (Unit Test) ===========*/
+
+/**
+ * @brief   Idle task
+ * @details Called by #FTSK_RunUserCodeCyclicAlgorithm100ms() each minute
+ *          This function save the actual database in the CSV file
+ * @ingroup API_OS
+ */
+extern void DATA_save_BIN_file(int select_file);
+
+/**
+ * @brief   Idle task
+ * @details Called by #FTSK_RunUserCodeCyclicAlgorithm100ms() when a CAN request with the ID 0xAAA is received
+ *          This function send the actual database to the server via CAN communication
+ * @ingroup API_OS
+ */
+extern void DATABASE_can_transmission(void);
 
 #endif /* FOXBMS__FTASK_CFG_H_ */
